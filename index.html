@@ -22,15 +22,16 @@
     <div class="tip" id="tip"></div>
     <p class="note" id="note" style="padding:6px 6px 0"></p>
   </section>
-  <section class="take" id="take" aria-label="시간 대조로 본 포인트"></section>
+  <h2 id="take-h" hidden style="margin:4px 0 -6px">월요일 장 체크포인트</h2>
+  <section class="take" id="take" aria-label="포인트"></section>
   <section class="table-sec">
     <h2>뉴스별 직후 반응</h2>
     <div class="tbl"><table>
-      <thead><tr><th>#</th><th>한국 시간</th><th>뉴욕</th><th>분류</th><th>뉴스</th><th style="text-align:right">당시</th><th style="text-align:right">30분 뒤</th><th style="text-align:right">변화</th></tr></thead>
+      <thead><tr><th>#</th><th>한국 시간</th><th>뉴욕</th><th>분류</th><th>뉴스</th><th style="text-align:right" id="th-a">당시</th><th style="text-align:right" id="th-b">30분 뒤</th><th style="text-align:right">변화</th></tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
     <p class="note src" id="src" style="margin-top:8px"></p>
-    <p class="note src" style="margin-top:4px">회색 띠 = 정규장. "당시"는 뉴스 직전 봉 종가, "30분 뒤"는 그 30분 뒤 봉 종가(전일 종가 대비). 시간 대조 자료이며 인과를 단정하지 않습니다. 투자 권유가 아닙니다.</p>
+    <p class="note src" id="foot" style="margin-top:4px"></p>
   </section>
 </div>
 <script src="app.js"></script>

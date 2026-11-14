@@ -23,11 +23,13 @@ function prep(d){
   const inReg=q=>q.s>=d.open&&q.s<d.close, pre=q=>q.s<d.open, post=q=>q.s>=d.close;
   const best=(arr,f,k)=>arr.reduce((a,b)=>a===null||f(b[k],a[k])?b:a,null);
   const P=pts.filter(pre),R=pts.filter(inReg),A=pts.filter(post);
+  if(d.kind==="weekend"){const hi=best(pts,(x,y)=>x>y,"hi"),lo=best(pts,(x,y)=>x<y,"lo");stats={wk:true,hi,lo,last:pts[pts.length-1]};return;}
   stats={preHi:best(P,(x,y)=>x>y,"hi"),regLo:best(R,(x,y)=>x<y,"lo"),regHi:best(R,(x,y)=>x>y,"hi"),close:R[R.length-1],postLo:best(A,(x,y)=>x<y,"lo"),last:pts[pts.length-1]};
 }
 const at=t=>{let b=null;for(const q of pts){if(q.t<=t) b=q;}return b;};
 
 function renderText(){
+  if(D.kind==="weekend") return renderWeekend();
   $("title").textContent=`${D.label} 나스닥 장중 흐름과 뉴스 시각`;
   document.title=`미국장 뉴스 타임라인 · ${D.label}`;
   $("lede").textContent=`${D.symbol} ${D.step/60}분봉 종가를 전일 종가(${D.base.toFixed(2)}) 대비 등락률로 그리고, 주요 뉴스가 나온 시각을 세로선으로 겹쳤습니다. 시각은 한국 시간이며 표에 뉴욕 시간을 함께 적었습니다.`;
@@ -42,6 +44,12 @@ function renderText(){
   $("legend").innerHTML=Object.values(CAT).map(([n,v])=>`<span><i class="sw" style="background:var(${v})"></i>${n}</span>`).join("")+`<span><i class="sw" style="background:var(--line);border-radius:2px;height:3px;width:16px"></i>${D.symbol} (전일 종가 대비)</span>`;
   $("note").textContent=D.notes||"";
   $("take").innerHTML=(D.takeaways||[]).map(k=>`<div><b>${esc(k.title)}</b><p>${esc(k.body)}</p></div>`).join("");
+  $("take-h").hidden=true; $("th-a").textContent="당시"; $("th-b").textContent="30분 뒤";
+  $("foot").textContent='회색 띠 = 정규장. "당시"는 뉴스 직전 봉 종가, "30분 뒤"는 그 30분 뒤 봉 종가(전일 종가 대비). 시간 대조 자료이며 인과를 단정하지 않습니다. 투자 권유가 아닙니다.';
+  fillRows();
+  $("src").textContent=D.sources||"";
+}
+function fillRows(){
   const rows=(D.pre||[]).map(e=>({...e,n:null})).concat(D.events.map((e,i)=>({...e,n:i+1})));
   $("rows").innerHTML=rows.map(e=>{
     const [nm,col]=CAT[e.cat]||CAT.etc; let a="장 전",b="",dd="";
@@ -51,9 +59,22 @@ function renderText(){
     const safe=/^https:\/\//.test(e.url||"");
     const head=safe?`<a class="src-link" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">${esc(e.txt)}<span class="via">${esc(e.src||"원문")} ↗</span></a>`:esc(e.txt);
     return `<tr><td>${e.n?`<span class="idx" style="background:var(${col})">${e.n}</span>`:"—"}</td><td class="t">${kstFull(e.t)}</td><td class="t">${et(e.t)}</td><td><span class="tag"><i class="sw" style="background:var(${col})"></i>${nm}</span></td><td>${head}</td><td class="num">${a}</td><td class="num">${b}</td><td class="num">${dd}</td></tr>`;}).join("");
-  $("src").textContent=D.sources||"";
 }
 
+function renderWeekend(){
+  $("title").textContent=`${D.label} 주말 뉴스`;
+  document.title=`미국장 뉴스 타임라인 · ${D.label} 주말`;
+  $("lede").textContent=`미국 증시가 쉬는 동안(한국 시간 ${D.window}) 나온 주요 뉴스입니다. 차트는 주말에도 거래되는 비트코인(${D.symbol}, ${D.step/60}분봉, 구간 시작가 ${Math.round(D.base).toLocaleString()}달러 대비)이며, 뉴스 시각을 세로선으로 겹쳤습니다.`;
+  const s=stats,c=v=>v<0?"neg":v>0?"pos":"";
+  $("stats").innerHTML=[`BTC 구간 등락 <b class="${c(s.last.p)}">${fmt(s.last.p)}</b>`,`고점 <b class="${c(s.hi.hi)}">${fmt(s.hi.hi)}</b> (${kst(s.hi.s)})`,`저점 <b class="${c(s.lo.lo)}">${fmt(s.lo.lo)}</b> (${kst(s.lo.s)})`].map(x=>`<span>${x}</span>`).join("");
+  $("legend").innerHTML=Object.values(CAT).map(([n,v])=>`<span><i class="sw" style="background:var(${v})"></i>${n}</span>`).join("")+`<span><i class="sw" style="background:var(--line);border-radius:2px;height:3px;width:16px"></i>비트코인 (구간 시작 대비)</span>`;
+  $("note").textContent=D.notes||"";
+  $("take-h").textContent="월요일 장 체크포인트"; $("take-h").hidden=false;
+  $("take").innerHTML=(D.takeaways||[]).map(k=>`<div><b>${esc(k.title)}</b><p>${esc(k.body)}</p></div>`).join("");
+  $("th-a").textContent="BTC 당시"; $("th-b").textContent="30분 뒤"; $("foot").textContent='"BTC 당시"는 뉴스 직전 봉 종가, "30분 뒤"는 그 30분 뒤 봉 종가(구간 시작 대비). 시간 대조 자료이며 인과를 단정하지 않습니다. 투자 권유가 아닙니다.';
+  fillRows();
+  $("src").textContent=D.sources||"";
+}
 function draw(){
   const svg=$("chart"); svg.innerHTML="";
   const W=1000,H=470,L=52,R=16,TOP=84,B=36;
@@ -62,8 +83,8 @@ function draw(){
   let yMin=Math.floor((Math.min(...all,0)-0.15)*2)/2, yMax=Math.ceil((Math.max(...all,0)+0.15)*2)/2;
   const X=t=>L+(t-tMin)/(tMax-tMin)*(W-L-R), Y=p=>TOP+(yMax-p)/(yMax-yMin)*(H-TOP-B);
   const el=(n,a,p=svg)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;};
-  el("rect",{x:X(D.open),y:TOP,width:X(D.close)-X(D.open),height:H-TOP-B,fill:css("--session")});
-  el("text",{x:X(D.open)+6,y:H-B-8}).textContent="정규장";
+  if(D.open){el("rect",{x:X(D.open),y:TOP,width:X(D.close)-X(D.open),height:H-TOP-B,fill:css("--session")});
+  el("text",{x:X(D.open)+6,y:H-B-8}).textContent="정규장";}
   const span=yMax-yMin, stepY=span>4?1:0.5;
   for(let p=yMin;p<=yMax+1e-9;p+=stepY){const y=Y(p),z=Math.abs(p)<1e-9;
     el("line",{x1:L,x2:W-R,y1:y,y2:y,stroke:z?css("--zero"):css("--grid"),"stroke-width":1,"stroke-dasharray":z?"4 3":""});
@@ -92,6 +113,7 @@ function draw(){
   const mark=(q,v,label)=>{if(!q) return; const x=X(q.t),y=Y(q.p); el("circle",{cx:x,cy:y,r:4,fill:css("--line"),stroke:css("--surface"),"stroke-width":2});
     let dy=v<0?16:-8; if(placed.some(p=>Math.abs(p[0]-x)<120&&Math.abs(p[1]-(y+dy))<14)) dy=-dy; placed.push([x,y+dy]);
     const anchor=x>W-170?"end":"start"; el("text",{x:anchor==="end"?x-6:x+6,y:y+dy,"text-anchor":anchor,style:"fill:"+css("--fg2")}).textContent=label;};
+  if(s.wk){mark(s.hi,1,`고점 ${fmt(s.hi.p)}`);mark(s.lo,-1,`저점 ${fmt(s.lo.p)}`);mark(s.last,s.last.p>=0?1:-1,`현재 ${fmt(s.last.p)}`);}
   if(s.preHi&&s.preHi.hi>0.2) mark(s.preHi,1,`장전 고점권 ${fmt(s.preHi.p)}`);
   if(s.regLo) mark(s.regLo,-1,`저점권 ${fmt(s.regLo.p)} (저가 ${fmt(s.regLo.lo)})`);
   if(s.close) mark(s.close,s.close.p>=0?1:-1,`종가 ${fmt(s.close.p)}`);
