@@ -54,6 +54,10 @@ tr:last-child td{border-bottom:0}
 .take b{display:block;margin-bottom:4px;font-weight:600}
 .take p{margin:0;color:var(--fg2);font-size:13px}
 .empty{padding:40px 0;color:var(--muted)}
+a.src-link{color:var(--fg);text-decoration:underline;text-decoration-color:var(--axis);text-underline-offset:3px}
+a.src-link:hover{text-decoration-color:var(--c-ai)}
+a.src-link:focus-visible{outline:2px solid var(--c-ai);outline-offset:2px;border-radius:2px}
+.via{margin-left:6px;font-size:11.5px;color:var(--muted);white-space:nowrap}
 /* 텔레그램 이미지용 카드 모드 */
 body.card .wrap{max-width:1100px;padding-block:22px 18px;gap:12px}
 body.card .table-sec,body.card .top select,body.card .src{display:none}

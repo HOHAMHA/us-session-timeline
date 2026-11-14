@@ -48,7 +48,9 @@ function renderText(){
     if(e.n){const p0=at(e.t),p1=at(e.t+1800);
       if(p0) a=fmt(p0.p); else a="—";
       if(p0&&p1&&p1!==p0){const v=p1.p-p0.p;b=fmt(p1.p);dd=`<span class="${v<-0.05?"neg":v>0.05?"pos":""}">${v>=0?"+":"−"}${Math.abs(v).toFixed(2)}%p</span>`;}}
-    return `<tr><td>${e.n?`<span class="idx" style="background:var(${col})">${e.n}</span>`:"—"}</td><td class="t">${kstFull(e.t)}</td><td class="t">${et(e.t)}</td><td><span class="tag"><i class="sw" style="background:var(${col})"></i>${nm}</span></td><td>${esc(e.txt)}</td><td class="num">${a}</td><td class="num">${b}</td><td class="num">${dd}</td></tr>`;}).join("");
+    const safe=/^https:\/\//.test(e.url||"");
+    const head=safe?`<a class="src-link" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">${esc(e.txt)}<span class="via">${esc(e.src||"원문")} ↗</span></a>`:esc(e.txt);
+    return `<tr><td>${e.n?`<span class="idx" style="background:var(${col})">${e.n}</span>`:"—"}</td><td class="t">${kstFull(e.t)}</td><td class="t">${et(e.t)}</td><td><span class="tag"><i class="sw" style="background:var(${col})"></i>${nm}</span></td><td>${head}</td><td class="num">${a}</td><td class="num">${b}</td><td class="num">${dd}</td></tr>`;}).join("");
   $("src").textContent=D.sources||"";
 }
 
@@ -81,7 +83,7 @@ function draw(){
     el("circle",{cx:x,cy,r:9,fill:col,stroke:css("--surface"),"stroke-width":2},g);
     el("text",{x,y:cy+3.6,"text-anchor":"middle",style:"fill:#fff;font-size:10px;font-weight:500"},g).textContent=n;
     el("rect",{x:x-11,y:cy-11,width:22,height:22,fill:"transparent"},g);
-    const html=`<b>${n}. ${kst(e.t)} KST (${et(e.t)} ET)</b><br>${esc(e.txt)}`;
+    const html=`<b>${n}. ${kst(e.t)} KST (${et(e.t)} ET)</b><br>${esc(e.txt)}${e.url?`<br><span style="opacity:.75">${esc(e.src||"원문")} 링크는 아래 표에서</span>`:""}`;
     g.addEventListener("mousemove",ev=>tip(ev,html));g.addEventListener("mouseleave",hide);
     g.addEventListener("focus",()=>{const r=svg.getBoundingClientRect();tip({clientX:r.left+x/W*r.width,clientY:r.top+40},html);});g.addEventListener("blur",hide);});
   const d=pts.map((q,i)=>(i?"L":"M")+X(q.t).toFixed(1)+" "+Y(q.p).toFixed(1)).join(" ");
