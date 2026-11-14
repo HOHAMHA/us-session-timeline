@@ -1,0 +1,60 @@
+/* Layout: 한 장의 장중 차트(QQQ, 전일 종가 대비 %) 위에 뉴스 시각을 세로선으로 겹치고, 아래 표에서 뉴스별 직후 반응을 수치로 확인 */
+:root{
+  --bg:#f7f8fa; --surface:#fcfcfb; --fg:#1d232b; --fg2:#4a5562; --muted:#6f7a87;
+  --grid:#e3e7ec; --axis:#b9c1ca; --line:#1d232b; --session:#eef1f5; --zero:#9aa4af;
+  --c-ai:#2a78d6; --c-fed:#eb6834; --c-data:#1baf7a; --c-etc:#eda100;
+  --neg:#c23b3b; --pos:#1f7a4d;
+  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141517; --surface:#1a1a19; --fg:#eceef1; --fg2:#b9c0c9; --muted:#8a939d;
+  --grid:#2a2d31; --axis:#4a4f56; --line:#eceef1; --session:#202226; --zero:#6b737c;
+  --c-ai:#3987e5; --c-fed:#d95926; --c-data:#199e70; --c-etc:#c98500;
+  --neg:#ef7070; --pos:#4fc48a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141517; --surface:#1a1a19; --fg:#eceef1; --fg2:#b9c0c9; --muted:#8a939d;
+  --grid:#2a2d31; --axis:#4a4f56; --line:#eceef1; --session:#202226; --zero:#6b737c;
+  --c-ai:#3987e5; --c-fed:#d95926; --c-data:#199e70; --c-etc:#c98500;
+  --neg:#ef7070; --pos:#4fc48a; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.brand{font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--grid);border-radius:8px;background:var(--surface);color:var(--fg)}
+select:focus-visible{outline:2px solid var(--c-ai);outline-offset:2px}
+h1{font-size:22px;font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{margin:4px 0 0;color:var(--fg2);max-width:70ch}
+.stats{display:flex;flex-wrap:wrap;gap:6px 22px;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:13px;color:var(--fg2)}
+.stats b{font-weight:500}
+.neg{color:var(--neg)} .pos{color:var(--pos)}
+.panel{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:14px 12px 10px;position:relative}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--fg2);padding:0 6px 8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.chart{overflow-x:auto}
+svg{display:block;width:100%;height:auto;min-width:640px}
+svg text{fill:var(--muted);font-family:var(--f-mono);font-size:11px}
+.tip{position:absolute;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12px;line-height:1.45;padding:7px 9px;border-radius:6px;max-width:280px;opacity:0;transition:opacity .08s;z-index:2}
+.note{font-size:12.5px;color:var(--muted);margin:0}
+h2{font-size:15px;font-weight:600;margin:0 0 8px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--grid);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+th{font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.02em}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.t{font-family:var(--f-mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--fg2);white-space:nowrap}
+.idx{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;color:#fff;font-family:var(--f-mono);font-size:11px;font-weight:500}
+.take{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.take div{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:12px 14px;min-width:0}
+.take b{display:block;margin-bottom:4px;font-weight:600}
+.take p{margin:0;color:var(--fg2);font-size:13px}
+.empty{padding:40px 0;color:var(--muted)}
+/* 텔레그램 이미지용 카드 모드 */
+body.card .wrap{max-width:1100px;padding-block:22px 18px;gap:12px}
+body.card .table-sec,body.card .top select,body.card .src{display:none}
+@media (prefers-reduced-motion: reduce){.tip{transition:none}}

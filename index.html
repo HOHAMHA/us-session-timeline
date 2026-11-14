@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>미국장 뉴스 타임라인</title>
+<meta name="description" content="미국 정규장 하루치 나스닥(QQQ) 장중 흐름에 주요 뉴스 공개 시각을 겹쳐 뉴스별 직후 반응을 비교합니다. 화~토 아침 갱신.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span class="brand">미국장 뉴스 타임라인</span><label><span class="sr" style="position:absolute;left:-9999px">날짜</span><select id="pick" aria-label="날짜 선택"></select></label></div>
+  <header>
+    <h1 id="title">불러오는 중…</h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <div class="stats" id="stats" aria-label="핵심 수치"></div>
+  <section class="panel">
+    <div class="legend" id="legend"></div>
+    <div class="chart"><svg id="chart" viewBox="0 0 1000 470" role="img" aria-label="장중 등락률과 뉴스 시각"></svg></div>
+    <div class="tip" id="tip"></div>
+    <p class="note" id="note" style="padding:6px 6px 0"></p>
+  </section>
+  <section class="take" id="take" aria-label="시간 대조로 본 포인트"></section>
+  <section class="table-sec">
+    <h2>뉴스별 직후 반응</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>#</th><th>한국 시간</th><th>뉴욕</th><th>분류</th><th>뉴스</th><th style="text-align:right">당시</th><th style="text-align:right">30분 뒤</th><th style="text-align:right">변화</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <p class="note src" id="src" style="margin-top:8px"></p>
+    <p class="note src" style="margin-top:4px">회색 띠 = 정규장. "당시"는 뉴스 직전 봉 종가, "30분 뒤"는 그 30분 뒤 봉 종가(전일 종가 대비). 시간 대조 자료이며 인과를 단정하지 않습니다. 투자 권유가 아닙니다.</p>
+  </section>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
